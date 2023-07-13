@@ -47,20 +47,21 @@
     <Button
         android:id="@+id/LoginBtnNavHeader"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="38dp"
         android:layout_marginStart="8dp"
         android:background="@android:color/transparent"
         android:onClick="onLoginBtnNavClicked"
         android:text="Login"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/addChannelNavHeader"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="4dp"
         android:background="@android:color/transparent"
         android:onClick="addChannelNavClicked"
         android:padding="5dp"

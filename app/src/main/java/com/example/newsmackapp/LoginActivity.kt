@@ -1,5 +1,6 @@
 package com.example.newsmackapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -9,11 +10,13 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
     }
-    fun onLoginLoginBtnClicked(view : View){
+
+    fun onLoginLoginBtnClicked(view: View) {
 
     }
 
-    fun onLoginCreateUserBtnClicked(view: View){
-
+    fun onLoginCreateUserBtnClicked(view: View) {
+        val createUserIntent = Intent(this, CreateUserActivity::class.java)
+        startActivity(createUserIntent)
     }
 }
