@@ -1,4 +1,4 @@
-package com.example.newsmackapp
+package com.example.newsmackapp.controller
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +9,7 @@ import java.util.Random
 
 class CreateUserActivity : AppCompatActivity() {
 
-    private lateinit var binding:ActivityCreateUserBinding
+    private lateinit var binding: ActivityCreateUserBinding
     var userAvatar = "profileDefault"
     var avatarColor = "[0.5,0.5,0.5,1]"
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,36 +19,34 @@ class CreateUserActivity : AppCompatActivity() {
         setContentView(view)
     }
 
-    fun onCreateCreateUserBtnClicked(view: View){
+    fun onCreateCreateUserBtnClicked(view: View) {
 
     }
 
-    fun onCreateUserAvatarImageviewClicked(view: View){
+    fun onCreateUserAvatarImageviewClicked(view: View) {
         val random = Random()
         val color = random.nextInt(2)
         val avatar = random.nextInt(28)
 
-        if (color == 0){
+        if (color == 0) {
             userAvatar = "light$avatar"
-        } else{
+        } else {
             userAvatar = "dark$avatar"
         }
-
         val resourceId = resources.getIdentifier(userAvatar, "drawable", packageName)
         binding.createUserAvatarImageview.setImageResource(resourceId)
-
     }
 
-    fun onCreateGenerateBackgroundColorBtnClicked(view: View){
-            val random = Random()
-            val r = random.nextInt(255)
+    fun onCreateGenerateBackgroundColorBtnClicked(view: View) {
+        val random = Random()
+        val r = random.nextInt(255)
         val g = random.nextInt(255)
         val b = random.nextInt(255)
-        binding.createUserAvatarImageview.setBackgroundColor(Color.rgb(r,g,b))
+        binding.createUserAvatarImageview.setBackgroundColor(Color.rgb(r, g, b))
 
         val savedR = r.toDouble() / 255
-        val savedG = r.toDouble()/255
-        val savedB = r.toDouble()/255
+        val savedG = r.toDouble() / 255
+        val savedB = r.toDouble() / 255
         avatarColor = "[$savedR, $savedG, $savedB, 1]"
         println(avatarColor)
     }
