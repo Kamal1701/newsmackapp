@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.example.newsmackapp.databinding.ActivityCreateUserBinding
+import com.example.newsmackapp.services.AuthService
 import java.util.Random
 
 class CreateUserActivity : AppCompatActivity() {
@@ -20,7 +21,21 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun onCreateCreateUserBtnClicked(view: View) {
+        val userName = binding.createUserNameTxt.text.toString()
+        val userEmail = binding.createEmailTxt.text.toString()
+        val userPassword = binding.createUserPasswordTxt.text.toString()
+        AuthService.registerUser(this, userEmail, userPassword){
+            registerSuccess -> if(registerSuccess){
+                AuthService.loginUser(this, userEmail, userPassword){loginSuccess ->
+                    if(loginSuccess){
+                        println(AuthService.authToken)
+                        println(AuthService.userEmail)
+                    }
 
+                }
+
+        }
+        }
     }
 
     fun onCreateUserAvatarImageviewClicked(view: View) {
