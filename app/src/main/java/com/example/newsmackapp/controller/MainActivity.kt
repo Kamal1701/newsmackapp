@@ -1,7 +1,9 @@
 package com.example.newsmackapp.controller
 
 import android.content.Intent
+import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.text.format.Formatter
 import android.view.View
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -32,6 +34,9 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
+//        WifiManager wifimanager = (WifiManager) getApplicationContext().getSystemService(
+//            WIFI_SERVICE)
+//        println(Formatter.formatIpAddress(wifimanager.getConnectionInfo().getIpAddress()))
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
