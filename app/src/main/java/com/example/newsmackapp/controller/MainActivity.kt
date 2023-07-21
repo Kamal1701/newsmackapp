@@ -1,6 +1,10 @@
 package com.example.newsmackapp.controller
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.Color
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.text.format.Formatter
@@ -13,8 +17,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.newsmackapp.R
 import com.example.newsmackapp.databinding.ActivityMainBinding
+import com.example.newsmackapp.services.AuthService
+import com.example.newsmackapp.services.UserDataServices
+import com.example.newsmackapp.utilities.BROADCAST_USER_DATA_CHANGE
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,9 +42,6 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-//        WifiManager wifimanager = (WifiManager) getApplicationContext().getSystemService(
-//            WIFI_SERVICE)
-//        println(Formatter.formatIpAddress(wifimanager.getConnectionInfo().getIpAddress()))
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
@@ -44,6 +49,23 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
+            BROADCAST_USER_DATA_CHANGE))
+    }
+
+    private val userDataChangeReceiver = object : BroadcastReceiver(){
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if(AuthService.isLoggedIn){
+                binding.andriodDrawerNavInclude.userNameNavHeader.text = UserDataServices.name
+                binding.andriodDrawerNavInclude.userEmailNavHeader.text = UserDataServices.email
+                val resourceId = resources.getIdentifier(UserDataServices.avatarName, "drawable", packageName)
+                binding.andriodDrawerNavInclude.userImgNavHeader.setImageResource(resourceId)
+                binding.andriodDrawerNavInclude.userImgNavHeader.setBackgroundColor(UserDataServices.returnAvatarColor(UserDataServices.avatarColor))
+                binding.andriodDrawerNavInclude.LoginBtnNavHeader.text = "Logout"
+            }
+        }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -52,8 +74,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onLoginBtnNavClicked(view: View){
-        val loginIntent = Intent(this, LoginActivity::class.java)
-        startActivity(loginIntent)
+
+        if(AuthService.isLoggedIn){
+            UserDataServices.logout()
+            binding.andriodDrawerNavInclude.userNameNavHeader.text = ""
+            binding.andriodDrawerNavInclude.userEmailNavHeader.text = ""
+            binding.andriodDrawerNavInclude.userImgNavHeader.setImageResource(R.drawable.profiledefault)
+            binding.andriodDrawerNavInclude.userImgNavHeader.setBackgroundColor(Color.TRANSPARENT)
+            binding.andriodDrawerNavInclude.LoginBtnNavHeader.text = "Login"
+
+        } else{
+            val loginIntent = Intent(this, LoginActivity::class.java)
+            startActivity(loginIntent)
+        }
     }
 
     fun addChannelNavClicked(view: View){
