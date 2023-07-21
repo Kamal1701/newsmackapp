@@ -34,11 +34,12 @@ object AuthService {
 
         val registerRequest =
             object : StringRequest(Method.POST, URL_REGISTER, Response.Listener { response ->
-                println(response)
+                complete(true)
 
             }, Response.ErrorListener { error ->
                 Log.d("ERROR", "Could not register user:$error")
                 Log.d("ERROR", "register user URL:$URL_REGISTER")
+                complete(false)
 
             }) {
                 override fun getBodyContentType(): String {
