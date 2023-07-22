@@ -1,15 +1,16 @@
 package com.example.newsmackapp.controller
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.newsmackapp.databinding.ActivityCreateUserBinding
 import com.example.newsmackapp.services.AuthService
-import com.example.newsmackapp.services.UserDataServices
 import com.example.newsmackapp.utilities.BROADCAST_USER_DATA_CHANGE
 import java.util.Random
 
@@ -31,7 +32,7 @@ class CreateUserActivity : AppCompatActivity() {
         val userName = binding.createUserNameTxt.text.toString()
         val userEmail = binding.createEmailTxt.text.toString()
         val userPassword = binding.createUserPasswordTxt.text.toString()
-
+        hideKeyboard()
         if(userName.isNotEmpty() && userEmail.isNotEmpty() && userPassword.isNotEmpty()){
             AuthService.registerUser(this, userEmail, userPassword) { registerSuccess ->
                 if (registerSuccess) {
@@ -112,5 +113,13 @@ class CreateUserActivity : AppCompatActivity() {
         binding.createCreateUserBtn.isEnabled = !enable
         binding.createUserAvatarImageview.isEnabled = !enable
         binding.createGenerateBackgroundBtn.isEnabled = !enable
+    }
+
+    fun hideKeyboard(){
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        if(inputManager.isAcceptingText){
+            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
     }
 }

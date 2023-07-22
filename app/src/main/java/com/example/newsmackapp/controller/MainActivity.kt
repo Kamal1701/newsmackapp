@@ -9,6 +9,9 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.text.format.Formatter
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -51,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
             BROADCAST_USER_DATA_CHANGE))
+        hideKeyboard()
     }
 
     private val userDataChangeReceiver = object : BroadcastReceiver(){
@@ -91,9 +95,38 @@ class MainActivity : AppCompatActivity() {
 
     fun addChannelNavClicked(view: View){
 
+        if(AuthService.isLoggedIn){
+            val builder = AlertDialog.Builder(this)
+            val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
+
+            builder.setView(dialogView)
+                .setPositiveButton("Add"){ dialogInterface, i ->
+                    val nameTextField = dialogView.findViewById<EditText>(R.id.addChannelNameTxt)
+                    val descTextField = dialogView.findViewById<EditText>(R.id.addChannelDescTxt)
+                    val channelName = nameTextField.text.toString()
+                    val channelDesc = descTextField.text.toString()
+
+                    hideKeyboard()
+
+                }
+                .setNegativeButton("Cancel"){ dialogInterface, i ->
+                    hideKeyboard()
+                }
+                .show()
+
+        }
+
     }
 
     fun messageSendBtnClicked(view: View){
 
+    }
+
+    fun hideKeyboard(){
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        if(inputManager.isAcceptingText){
+            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
     }
 }
