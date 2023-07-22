@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
-import android.net.wifi.WifiManager
 import android.os.Bundle
-import android.text.format.Formatter
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -143,9 +141,9 @@ class MainActivity : AppCompatActivity() {
     private val onNewChannel = Emitter.Listener { args ->
         runOnUiThread {
             val channelName = args[0] as String
-            val channelDescripton = args[1] as String
+            val channelDescription = args[1] as String
             val channelId = args[2] as String
-            val newChannel = Channel(channelName, channelDescripton, channelId)
+            val newChannel = Channel(channelName, channelDescription, channelId)
             MessageServices.channels.add(newChannel)
             channelAdapter.notifyDataSetChanged()
         }
@@ -155,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         hideKeyboard()
     }
 
-    fun hideKeyboard(){
+    private fun hideKeyboard(){
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if(inputManager.isAcceptingText){
             inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
