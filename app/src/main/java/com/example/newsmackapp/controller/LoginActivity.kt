@@ -39,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } else{
                     errorToast()
+                    enableSpinner(false)
                 }
             }
         } else{

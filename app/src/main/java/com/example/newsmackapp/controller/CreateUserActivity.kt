@@ -80,6 +80,7 @@ class CreateUserActivity : AppCompatActivity() {
         } else {
             userAvatar = "dark$avatar"
         }
+        println(userAvatar)
         val resourceId = resources.getIdentifier(userAvatar, "drawable", packageName)
         binding.createUserAvatarImageview.setImageResource(resourceId)
     }

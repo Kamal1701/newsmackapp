@@ -23,14 +23,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.newsmackapp.R
 import com.example.newsmackapp.databinding.ActivityMainBinding
+import com.example.newsmackapp.model.Channel
 import com.example.newsmackapp.services.AuthService
+import com.example.newsmackapp.services.MessageServices
 import com.example.newsmackapp.services.UserDataServices
 import com.example.newsmackapp.utilities.BROADCAST_USER_DATA_CHANGE
+import com.example.newsmackapp.utilities.SOCKET_URL
+import io.socket.client.IO
+import io.socket.emitter.Emitter
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    val socket = IO.socket(SOCKET_URL)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +60,21 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
             BROADCAST_USER_DATA_CHANGE))
-        hideKeyboard()
+
+        socket.connect()
+        socket.on("channelCreated",onNewChannel)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
+            BROADCAST_USER_DATA_CHANGE))
+    }
+
+    override fun onDestroy() {
+        socket.disconnect()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
+        super.onDestroy()
     }
 
     private val userDataChangeReceiver = object : BroadcastReceiver(){
@@ -105,21 +125,29 @@ class MainActivity : AppCompatActivity() {
                     val descTextField = dialogView.findViewById<EditText>(R.id.addChannelDescTxt)
                     val channelName = nameTextField.text.toString()
                     val channelDesc = descTextField.text.toString()
-
-                    hideKeyboard()
-
+                    socket.emit("newChannel", channelName, channelDesc)
                 }
                 .setNegativeButton("Cancel"){ dialogInterface, i ->
-                    hideKeyboard()
+
                 }
                 .show()
-
         }
+    }
 
+    private val onNewChannel = Emitter.Listener { args ->
+        runOnUiThread {
+            val channelName = args[0] as String
+            val channelDescripton = args[1] as String
+            val channelId = args[2] as String
+
+            val newChannel = Channel(channelName, channelDescripton, channelId)
+
+            MessageServices.channels.add(newChannel)
+        }
     }
 
     fun messageSendBtnClicked(view: View){
-
+        hideKeyboard()
     }
 
     fun hideKeyboard(){
