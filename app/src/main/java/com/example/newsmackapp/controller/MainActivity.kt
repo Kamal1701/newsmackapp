@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.text.format.Formatter
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.navigation.NavigationView
@@ -37,6 +38,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     val socket = IO.socket(SOCKET_URL)
+    lateinit var channelAdapter : ArrayAdapter<Channel>
+
+    private fun setupAdapters(){
+        channelAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageServices.channels)
+        binding.channelList.adapter = channelAdapter
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,9 +67,9 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
             BROADCAST_USER_DATA_CHANGE))
-
         socket.connect()
         socket.on("channelCreated",onNewChannel)
+        setupAdapters()
     }
 
     override fun onResume() {
@@ -78,8 +85,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val userDataChangeReceiver = object : BroadcastReceiver(){
-
-        override fun onReceive(context: Context?, intent: Intent?) {
+        override fun onReceive(context: Context, intent: Intent?) {
             if(AuthService.isLoggedIn){
                 binding.andriodDrawerNavInclude.userNameNavHeader.text = UserDataServices.name
                 binding.andriodDrawerNavInclude.userEmailNavHeader.text = UserDataServices.email
@@ -87,9 +93,13 @@ class MainActivity : AppCompatActivity() {
                 binding.andriodDrawerNavInclude.userImgNavHeader.setImageResource(resourceId)
                 binding.andriodDrawerNavInclude.userImgNavHeader.setBackgroundColor(UserDataServices.returnAvatarColor(UserDataServices.avatarColor))
                 binding.andriodDrawerNavInclude.LoginBtnNavHeader.text = "Logout"
+                MessageServices.getChannels(context){complete ->
+                    if(complete){
+                        channelAdapter.notifyDataSetChanged()
+                    }
+                }
             }
         }
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -106,7 +116,6 @@ class MainActivity : AppCompatActivity() {
             binding.andriodDrawerNavInclude.userImgNavHeader.setImageResource(R.drawable.profiledefault)
             binding.andriodDrawerNavInclude.userImgNavHeader.setBackgroundColor(Color.TRANSPARENT)
             binding.andriodDrawerNavInclude.LoginBtnNavHeader.text = "Login"
-
         } else{
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -114,11 +123,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addChannelNavClicked(view: View){
-
         if(AuthService.isLoggedIn){
             val builder = AlertDialog.Builder(this)
             val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
-
             builder.setView(dialogView)
                 .setPositiveButton("Add"){ dialogInterface, i ->
                     val nameTextField = dialogView.findViewById<EditText>(R.id.addChannelNameTxt)
@@ -128,7 +135,6 @@ class MainActivity : AppCompatActivity() {
                     socket.emit("newChannel", channelName, channelDesc)
                 }
                 .setNegativeButton("Cancel"){ dialogInterface, i ->
-
                 }
                 .show()
         }
@@ -139,10 +145,9 @@ class MainActivity : AppCompatActivity() {
             val channelName = args[0] as String
             val channelDescripton = args[1] as String
             val channelId = args[2] as String
-
             val newChannel = Channel(channelName, channelDescripton, channelId)
-
             MessageServices.channels.add(newChannel)
+            channelAdapter.notifyDataSetChanged()
         }
     }
 
@@ -152,7 +157,6 @@ class MainActivity : AppCompatActivity() {
 
     fun hideKeyboard(){
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
         if(inputManager.isAcceptingText){
             inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
