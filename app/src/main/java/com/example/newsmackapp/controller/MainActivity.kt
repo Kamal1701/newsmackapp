@@ -68,6 +68,10 @@ class MainActivity : AppCompatActivity() {
         socket.connect()
         socket.on("channelCreated",onNewChannel)
         setupAdapters()
+
+        if(App.sharedPrefs.isLoggedIn){
+            AuthService.findUserByEmail(this){}
+        }
     }
 
     override fun onResume() {
@@ -84,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
     private val userDataChangeReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context, intent: Intent?) {
-            if(AuthService.isLoggedIn){
+            if(App.sharedPrefs.isLoggedIn){
                 binding.andriodDrawerNavInclude.userNameNavHeader.text = UserDataServices.name
                 binding.andriodDrawerNavInclude.userEmailNavHeader.text = UserDataServices.email
                 val resourceId = resources.getIdentifier(UserDataServices.avatarName, "drawable", packageName)
@@ -107,7 +111,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onLoginBtnNavClicked(view: View){
 
-        if(AuthService.isLoggedIn){
+        if(App.sharedPrefs.isLoggedIn){
             UserDataServices.logout()
             binding.andriodDrawerNavInclude.userNameNavHeader.text = ""
             binding.andriodDrawerNavInclude.userEmailNavHeader.text = ""
@@ -121,7 +125,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addChannelNavClicked(view: View){
-        if(AuthService.isLoggedIn){
+        if(App.sharedPrefs.isLoggedIn){
             val builder = AlertDialog.Builder(this)
             val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
             builder.setView(dialogView)

@@ -1,6 +1,7 @@
 package com.example.newsmackapp.services
 
 import android.graphics.Color
+import com.example.newsmackapp.controller.App
 import java.util.Scanner
 
 object UserDataServices {
@@ -34,8 +35,8 @@ object UserDataServices {
         avatarName = ""
         email = ""
         name = ""
-        AuthService.userEmail = ""
-        AuthService.isLoggedIn = false
-        AuthService.authToken = ""
+        App.sharedPrefs.userEmail = ""
+        App.sharedPrefs.isLoggedIn = false
+        App.sharedPrefs.authToken = ""
     }
 }

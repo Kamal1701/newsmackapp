@@ -6,6 +6,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.example.newsmackapp.controller.App
 import com.example.newsmackapp.model.Channel
 import com.example.newsmackapp.utilities.URL_GET_CHANNELS
 
@@ -43,7 +44,7 @@ object MessageServices {
 
             override fun getHeaders(): MutableMap<String, String> {
                 val header = HashMap<String, String>()
-                header.put("Authorization", "Bearer ${AuthService.authToken}")
+                header.put("Authorization", "Bearer ${App.sharedPrefs.authToken}")
                 return header
             }
         }

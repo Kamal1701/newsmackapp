@@ -12,6 +12,7 @@
         android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.NewSmackApp"
+        android:name=".controller.App"
         tools:targetApi="31">
         <activity
             android:name=".controller.CreateUserActivity"
