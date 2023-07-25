@@ -14,7 +14,7 @@ object MessageServices {
 
     val channels = ArrayList<Channel>()
 
-    fun getChannels(context: Context, complete: (Boolean) -> Unit) {
+    fun getChannels(complete: (Boolean) -> Unit) {
         val channelRequest = object :
             JsonArrayRequest(Method.GET, URL_GET_CHANNELS, null, Response.Listener { response ->
                 try {
@@ -48,7 +48,7 @@ object MessageServices {
                 return header
             }
         }
-        Volley.newRequestQueue(context).add(channelRequest)
+        App.sharedPrefs.requestQueue.add(channelRequest)
     }
 
 }

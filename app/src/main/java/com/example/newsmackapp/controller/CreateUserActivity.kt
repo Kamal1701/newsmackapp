@@ -33,24 +33,25 @@ class CreateUserActivity : AppCompatActivity() {
         val userEmail = binding.createEmailTxt.text.toString()
         val userPassword = binding.createUserPasswordTxt.text.toString()
         hideKeyboard()
-        if(userName.isNotEmpty() && userEmail.isNotEmpty() && userPassword.isNotEmpty()){
-            AuthService.registerUser(this, userEmail, userPassword) { registerSuccess ->
+        if (userName.isNotEmpty() && userEmail.isNotEmpty() && userPassword.isNotEmpty()) {
+            AuthService.registerUser(userEmail, userPassword) { registerSuccess ->
                 if (registerSuccess) {
-                    AuthService.loginUser(this, userEmail, userPassword) { loginSuccess ->
+                    AuthService.loginUser(userEmail, userPassword) { loginSuccess ->
                         if (loginSuccess) {
                             AuthService.createUser(
-                                this,
+
                                 userName,
                                 userEmail,
                                 userAvatar,
-                                avatarColor,
+                                avatarColor
                             ) { createSuccess ->
                                 if (createSuccess) {
                                     val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
-                                    LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChange)
+                                    LocalBroadcastManager.getInstance(this)
+                                        .sendBroadcast(userDataChange)
                                     enableSpinner(false)
                                     finish()
-                                } else{
+                                } else {
                                     errorToast()
                                 }
                             }
@@ -62,8 +63,12 @@ class CreateUserActivity : AppCompatActivity() {
                     errorToast()
                 }
             }
-        } else{
-            Toast.makeText(this, "Make sure username, email and password are filled", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(
+                this,
+                "Make sure username, email and password are filled",
+                Toast.LENGTH_LONG
+            ).show()
             enableSpinner(false)
         }
 
@@ -99,13 +104,13 @@ class CreateUserActivity : AppCompatActivity() {
         println(avatarColor)
     }
 
-    fun errorToast(){
+    fun errorToast() {
         Toast.makeText(this, "Something went wrong, please try again.", Toast.LENGTH_LONG).show()
         enableSpinner(false)
     }
 
-    fun enableSpinner(enable:Boolean){
-        if(enable){
+    fun enableSpinner(enable: Boolean) {
+        if (enable) {
             binding.createSpinner.visibility = View.VISIBLE
         } else {
             binding.createSpinner.visibility = View.INVISIBLE
@@ -116,10 +121,10 @@ class CreateUserActivity : AppCompatActivity() {
         binding.createGenerateBackgroundBtn.isEnabled = !enable
     }
 
-    fun hideKeyboard(){
+    fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        if(inputManager.isAcceptingText){
+        if (inputManager.isAcceptingText) {
             inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
     }
