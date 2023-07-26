@@ -162,6 +162,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val onNewChannel = Emitter.Listener { args ->
+        if(App.sharedPrefs.isLoggedIn){
         runOnUiThread {
             val channelName = args[0] as String
             val channelDescription = args[1] as String
@@ -170,27 +171,39 @@ class MainActivity : AppCompatActivity() {
             MessageServices.channels.add(newChannel)
             channelAdapter.notifyDataSetChanged()
         }
+        }
     }
 
     private val onNewMessage = Emitter.Listener { args ->
-        runOnUiThread {
-            val msgBody = args[0] as String
-            val channelId = args[2] as String
-            val userName = args[3] as String
-            val userAvatar = args[4] as String
-            val avatarColor = args[5] as String
-            val id = args[6] as String
-            val timeStamp = args[7] as String
-
-            val newMessage = Message(msgBody, channelId, userName, userAvatar, avatarColor, id, timeStamp)
-            MessageServices.messages.add(newMessage)
-            println(newMessage.message)
-
+        if(App.sharedPrefs.isLoggedIn) {
+            runOnUiThread {
+                val channelId = args[2] as String
+                if(channelId == selectedChannel?.id){
+                    val msgBody = args[0] as String
+                    val userName = args[3] as String
+                    val userAvatar = args[4] as String
+                    val avatarColor = args[5] as String
+                    val id = args[6] as String
+                    val timeStamp = args[7] as String
+                    val newMessage =
+                        Message(msgBody, channelId, userName, userAvatar, avatarColor, id, timeStamp)
+                    MessageServices.messages.add(newMessage)
+                }
+            }
         }
     }
 
     fun updateWithChannel(){
         contentMainBinding.mainChannelName.text = "#${selectedChannel?.name}"
+        if(selectedChannel != null){
+            MessageServices.getMessages(selectedChannel!!.id){complete ->
+                if(complete){
+                    for (message in MessageServices.messages){
+                        println(message.message)
+                    }
+                }
+            }
+        }
     }
 
     fun messageSendBtnClicked(view: View){
