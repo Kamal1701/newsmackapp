@@ -87,6 +87,11 @@ class MainActivity : AppCompatActivity() {
         socket.on("messageCreated", onNewMessage)
         setupAdapters()
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            userDataChangeReceiver, IntentFilter(
+                BROADCAST_USER_DATA_CHANGE
+            )
+        )
 
         binding.channelList.setOnItemClickListener { _, _, i, _ ->
             selectedChannel = MessageServices.channels[i]
@@ -98,15 +103,6 @@ class MainActivity : AppCompatActivity() {
         if (App.sharedPrefs.isLoggedIn) {
             AuthService.findUserByEmail(this) {}
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-            userDataChangeReceiver, IntentFilter(
-                BROADCAST_USER_DATA_CHANGE
-            )
-        )
     }
 
     override fun onDestroy() {
@@ -159,6 +155,7 @@ class MainActivity : AppCompatActivity() {
             binding.andriodDrawerNavInclude.userImgNavHeader.setImageResource(R.drawable.profiledefault)
             binding.andriodDrawerNavInclude.userImgNavHeader.setBackgroundColor(Color.TRANSPARENT)
             binding.andriodDrawerNavInclude.LoginBtnNavHeader.text = "Login"
+            contentMainBinding.mainChannelName.text = "Please log in"
         } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)

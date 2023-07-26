@@ -2,12 +2,18 @@ package com.example.newsmackapp.adapters
 
 import android.content.Context
 import android.service.autofill.UserData
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsmackapp.databinding.MessageListViewBinding
 import com.example.newsmackapp.model.Message
 import com.example.newsmackapp.services.UserDataServices
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class MessageAdapter(val context: Context, val messages: ArrayList<Message>): RecyclerView.Adapter<MessageAdapter.ViewHolder>() {
 
@@ -26,6 +32,21 @@ class MessageAdapter(val context: Context, val messages: ArrayList<Message>): Re
             messageBody?.text = message.message
 
         }
+
+        fun returnDateString(isoString : String) : String {
+            val isoFormatter = SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
+            var convertedDate = Date()
+            try{
+                convertedDate = isoFormatter.parse(isoString)
+
+            } catch (e: ParseException){
+                Log.d("PARSE", "Cannot parse date")
+            }
+            val outDateString = SimpleDateFormat("E, h:mm a", Locale.getDefault())
+            return outDateString.format(convertedDate)
+
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,4 +61,6 @@ class MessageAdapter(val context: Context, val messages: ArrayList<Message>): Re
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder?. bindMessage(context, messages[position])
     }
+
+
 }
