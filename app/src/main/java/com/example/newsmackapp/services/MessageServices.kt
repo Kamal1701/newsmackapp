@@ -8,11 +8,13 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.newsmackapp.controller.App
 import com.example.newsmackapp.model.Channel
+import com.example.newsmackapp.model.Message
 import com.example.newsmackapp.utilities.URL_GET_CHANNELS
 
 object MessageServices {
 
     val channels = ArrayList<Channel>()
+    val messages = ArrayList<Message>()
 
     fun getChannels(complete: (Boolean) -> Unit) {
         val channelRequest = object :

@@ -25,6 +25,7 @@ import com.example.newsmackapp.R
 import com.example.newsmackapp.databinding.ActivityMainBinding
 import com.example.newsmackapp.databinding.ContentMainBinding
 import com.example.newsmackapp.model.Channel
+import com.example.newsmackapp.model.Message
 import com.example.newsmackapp.services.AuthService
 import com.example.newsmackapp.services.MessageServices
 import com.example.newsmackapp.services.UserDataServices
@@ -71,6 +72,7 @@ class MainActivity : AppCompatActivity() {
             BROADCAST_USER_DATA_CHANGE))
         socket.connect()
         socket.on("channelCreated",onNewChannel)
+        socket.on("messageCreated", onNewMessage)
         setupAdapters()
 
 
@@ -170,12 +172,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val onNewMessage = Emitter.Listener { args ->
+        runOnUiThread {
+            val msgBody = args[0] as String
+            val channelId = args[2] as String
+            val userName = args[3] as String
+            val userAvatar = args[4] as String
+            val avatarColor = args[5] as String
+            val id = args[6] as String
+            val timeStamp = args[7] as String
+
+            val newMessage = Message(msgBody, channelId, userName, userAvatar, avatarColor, id, timeStamp)
+            MessageServices.messages.add(newMessage)
+            println(newMessage.message)
+
+        }
+    }
+
     fun updateWithChannel(){
         contentMainBinding.mainChannelName.text = "#${selectedChannel?.name}"
     }
 
     fun messageSendBtnClicked(view: View){
-        hideKeyboard()
+        if(App.sharedPrefs.isLoggedIn && contentMainBinding.messageTextField.text.isNotEmpty() && selectedChannel != null){
+val userId = UserDataServices.id
+            val channelId = selectedChannel!!.id
+            socket.emit("newMessage", contentMainBinding.messageTextField.text.toString(), userId, channelId, UserDataServices.name,
+            UserDataServices.avatarName, UserDataServices.avatarColor)
+            contentMainBinding.messageTextField.text.clear()
+            hideKeyboard()
+        }
+
     }
 
     private fun hideKeyboard(){
