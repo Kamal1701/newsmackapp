@@ -6,32 +6,32 @@ import java.util.Scanner
 
 object UserDataServices {
 
-    var id=""
-    var avatarColor =""
+    var id = ""
+    var avatarColor = ""
     var avatarName = ""
     var email = ""
     var name = ""
 
-    fun returnAvatarColor(component : String) : Int {
+    fun returnAvatarColor(component: String): Int {
         val strippedColor = component
-            .replace("[","")
-            .replace("]","")
-            .replace(",","")
+            .replace("[", "")
+            .replace("]", "")
+            .replace(",", "")
         var r = 0
         var g = 0
         var b = 0
         val scanner = Scanner(strippedColor)
-        if(scanner.hasNext()){
+        if (scanner.hasNext()) {
             r = (scanner.nextDouble() * 255).toInt()
             g = (scanner.nextDouble() * 255).toInt()
             b = (scanner.nextDouble() * 255).toInt()
         }
-        return Color.rgb(r,g,b)
+        return Color.rgb(r, g, b)
     }
 
-    fun logout(){
-        id=""
-        avatarColor =""
+    fun logout() {
+        id = ""
+        avatarColor = ""
         avatarName = ""
         email = ""
         name = ""

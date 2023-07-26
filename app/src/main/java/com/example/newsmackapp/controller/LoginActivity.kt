@@ -26,24 +26,24 @@ class LoginActivity : AppCompatActivity() {
         val email = binding.loginEmailTxt.toString()
         val password = binding.loginPasswordTxt.toString()
         hideKeyboard()
-        if(email.isNotEmpty() && password.isNotEmpty()){
-            AuthService.loginUser(email, password){loginSuccess ->
-                if(loginSuccess){
-                    AuthService.findUserByEmail(this){findSuccess ->
-                        if(findSuccess){
+        if (email.isNotEmpty() && password.isNotEmpty()) {
+            AuthService.loginUser(email, password) { loginSuccess ->
+                if (loginSuccess) {
+                    AuthService.findUserByEmail(this) { findSuccess ->
+                        if (findSuccess) {
                             enableSpinner(false)
                             finish()
-                        } else{
+                        } else {
                             errorToast()
                         }
                     }
-                } else{
+                } else {
                     errorToast()
                     enableSpinner(false)
                 }
             }
-        } else{
-            Toast.makeText(this, "Please fill both email and password",Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(this, "Please fill both email and password", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -53,13 +53,13 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
-    fun errorToast(){
+    fun errorToast() {
         Toast.makeText(this, "Something went wrong, please try again.", Toast.LENGTH_LONG).show()
         enableSpinner(false)
     }
 
-    fun enableSpinner(enable:Boolean){
-        if(enable){
+    fun enableSpinner(enable: Boolean) {
+        if (enable) {
             binding.loginSpinner.visibility = View.VISIBLE
         } else {
             binding.loginSpinner.visibility = View.INVISIBLE
@@ -71,10 +71,10 @@ class LoginActivity : AppCompatActivity() {
         binding.loginCreateUserBtn.isEnabled = !enable
     }
 
-    fun hideKeyboard(){
+    fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        if(inputManager.isAcceptingText){
+        if (inputManager.isAcceptingText) {
             inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
     }

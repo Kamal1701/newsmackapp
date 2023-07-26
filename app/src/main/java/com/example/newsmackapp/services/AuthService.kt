@@ -25,7 +25,7 @@ object AuthService {
 //    var authToken = ""
 
     fun registerUser(
-                email: String,
+        email: String,
         password: String,
         complete: (Boolean) -> Unit
     ) {
@@ -114,18 +114,18 @@ object AuthService {
                     UserDataServices.email = response.getString("email")
                     UserDataServices.avatarName = response.getString("avatarName")
                     UserDataServices.avatarColor = response.getString("avatarColor")
-                    UserDataServices.id  = response.getString("_id")
+                    UserDataServices.id = response.getString("_id")
                     complete(true)
 
-                } catch (e: JSONException){
+                } catch (e: JSONException) {
                     Log.d("JSON", "EXC: " + e.localizedMessage)
                     complete(false)
                 }
 
-            }, Response.ErrorListener {error ->
+            }, Response.ErrorListener { error ->
                 Log.d("ERROR", "Could not add user:$error")
                 complete(false)
-        }){
+            }) {
             override fun getBodyContentType(): String {
                 return "application/json: charset=utf-8"
             }
@@ -145,28 +145,29 @@ object AuthService {
 
     }
 
-    fun findUserByEmail(context: Context, complete: (Boolean) -> Unit){
+    fun findUserByEmail(context: Context, complete: (Boolean) -> Unit) {
 
-        val findUserRequest = object : JsonObjectRequest(Method.GET, "$URL_GET_USER${App.sharedPrefs.userEmail}", null,
-            Response.Listener {response ->
-            try{
-                UserDataServices.name = response.getString("name")
-                UserDataServices.email = response.getString("email")
-                UserDataServices.avatarName = response.getString("avatarName")
-                UserDataServices.avatarColor = response.getString("avatarColor")
-                UserDataServices.id = response.getString("_id")
+        val findUserRequest = object :
+            JsonObjectRequest(Method.GET, "$URL_GET_USER${App.sharedPrefs.userEmail}", null,
+                Response.Listener { response ->
+                    try {
+                        UserDataServices.name = response.getString("name")
+                        UserDataServices.email = response.getString("email")
+                        UserDataServices.avatarName = response.getString("avatarName")
+                        UserDataServices.avatarColor = response.getString("avatarColor")
+                        UserDataServices.id = response.getString("_id")
 
-                val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
-                LocalBroadcastManager.getInstance(context).sendBroadcast(userDataChange)
-                complete(true)
-            } catch (e: JSONException){
-                Log.d("JSON", "EXC:" + e.localizedMessage)
-            }
-        }, Response.ErrorListener {error ->
-            Log.d("ERROR", "Could not find user")
-            complete(false)
+                        val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(userDataChange)
+                        complete(true)
+                    } catch (e: JSONException) {
+                        Log.d("JSON", "EXC:" + e.localizedMessage)
+                    }
+                }, Response.ErrorListener { error ->
+                    Log.d("ERROR", "Could not find user")
+                    complete(false)
 
-        }){
+                }) {
             override fun getBodyContentType(): String {
                 return "application/json: charset=utf-8"
             }
