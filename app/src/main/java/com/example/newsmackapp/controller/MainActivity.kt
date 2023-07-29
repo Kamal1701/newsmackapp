@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -20,13 +21,13 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.FragmentContainerView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.newsmackapp.R
 import com.example.newsmackapp.adapters.MessageAdapter
 import com.example.newsmackapp.databinding.ActivityMainBinding
-import com.example.newsmackapp.databinding.ContentMainBinding
 import com.example.newsmackapp.model.Channel
 import com.example.newsmackapp.model.Message
 import com.example.newsmackapp.services.AuthService
@@ -41,20 +42,25 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private lateinit var contentMainBinding: ContentMainBinding
+//    private lateinit var contentMainBinding: ContentMainBinding
     val socket = IO.socket(SOCKET_URL)
     lateinit var channelAdapter: ArrayAdapter<Channel>
     lateinit var messageAdapter: MessageAdapter
     var selectedChannel: Channel? = null
+    lateinit var recyclerView : RecyclerView
+    lateinit var mainChannelNameTextView : TextView
+    lateinit var messageTextEditField : EditText
 
     private fun setupAdapters() {
         channelAdapter =
             ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageServices.channels)
         binding.channelList.adapter = channelAdapter
         messageAdapter = MessageAdapter(this, MessageServices.messages)
-        contentMainBinding.messageListView.adapter = messageAdapter
+        recyclerView.adapter = messageAdapter
+//        contentMainBinding.messageListView.adapter = messageAdapter
         val layoutManager = LinearLayoutManager(this)
-        contentMainBinding.messageListView.layoutManager = layoutManager
+//        contentMainBinding.messageListView.layoutManager = layoutManager
+        recyclerView.layoutManager = layoutManager
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +74,11 @@ class MainActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
+        val navigationView =  findViewById<FragmentContainerView>(R.id.nav_host_fragment_content_main)
+        val view = navigationView.rootView
+        recyclerView = view.findViewById(R.id.messageListView)
+        mainChannelNameTextView = view.findViewById(R.id.mainChannelName)
+        messageTextEditField = view.findViewById(R.id.messageTextField)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
@@ -98,7 +109,6 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             updateWithChannel()
         }
-
 
         if (App.sharedPrefs.isLoggedIn) {
             AuthService.findUserByEmail(this) {}
@@ -155,7 +165,8 @@ class MainActivity : AppCompatActivity() {
             binding.andriodDrawerNavInclude.userImgNavHeader.setImageResource(R.drawable.profiledefault)
             binding.andriodDrawerNavInclude.userImgNavHeader.setBackgroundColor(Color.TRANSPARENT)
             binding.andriodDrawerNavInclude.LoginBtnNavHeader.text = "Login"
-            contentMainBinding.mainChannelName.text = "Please log in"
+//            contentMainBinding.mainChannelName.text = "Please log in"
+            mainChannelNameTextView.text="Please log in"
         } else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -216,20 +227,23 @@ class MainActivity : AppCompatActivity() {
                         )
                     MessageServices.messages.add(newMessage)
                     messageAdapter.notifyDataSetChanged()
-                    contentMainBinding.messageListView.smoothScrollToPosition(messageAdapter.itemCount-1)
+//                    contentMainBinding.messageListView.smoothScrollToPosition(messageAdapter.itemCount-1)
+                    recyclerView.smoothScrollToPosition(messageAdapter.itemCount-1)
                 }
             }
         }
     }
 
     fun updateWithChannel() {
-        contentMainBinding.mainChannelName.text = "#${selectedChannel?.name}"
+//        contentMainBinding.mainChannelName.text = "#${selectedChannel?.name}"
+        mainChannelNameTextView.text = "#${selectedChannel?.name}"
         if (selectedChannel != null) {
             MessageServices.getMessages(selectedChannel!!.id) { complete ->
                 if (complete) {
                     messageAdapter.notifyDataSetChanged()
                     if(messageAdapter.itemCount > 0){
-                        contentMainBinding.messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+//                        contentMainBinding.messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+                        recyclerView.smoothScrollToPosition(messageAdapter.itemCount-1)
                     }
                 }
             }
@@ -237,19 +251,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun messageSendBtnClicked(view: View) {
-        if (App.sharedPrefs.isLoggedIn && contentMainBinding.messageTextField.text.isNotEmpty() && selectedChannel != null) {
+//        if (App.sharedPrefs.isLoggedIn && contentMainBinding.messageTextField.text.isNotEmpty() && selectedChannel != null) {
+        if (App.sharedPrefs.isLoggedIn && messageTextEditField.text.isNotEmpty() && selectedChannel != null) {
             val userId = UserDataServices.id
             val channelId = selectedChannel!!.id
             socket.emit(
                 "newMessage",
-                contentMainBinding.messageTextField.text.toString(),
+//                contentMainBinding.messageTextField.text.toString(),
+                messageTextEditField.text.toString(),
                 userId,
                 channelId,
                 UserDataServices.name,
                 UserDataServices.avatarName,
                 UserDataServices.avatarColor
             )
-            contentMainBinding.messageTextField.text.clear()
+//            contentMainBinding.messageTextField.text.clear()
+            messageTextEditField.text.clear()
             hideKeyboard()
         }
 
